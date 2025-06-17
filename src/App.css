@@ -1,0 +1,19 @@
+.app-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  margin: 10px;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}

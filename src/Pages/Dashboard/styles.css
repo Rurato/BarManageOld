@@ -1,0 +1,11 @@
+.dashboard-container {
+  text-align: center;
+}
+
+.dashboard-links {
+  margin-top: 20px;
+}
+
+.logout-btn{
+  display: table;
+}
