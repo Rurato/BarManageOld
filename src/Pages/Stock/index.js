@@ -213,7 +213,7 @@ function Stock() {
                   <td>{item.name}</td>
                   <td>{item.category}</td>
                   <td>{item.quantity}</td>
-                  <td>R${item.price}</td>
+                  <td>R${item.price.toFixed(2)}</td>
                   <td>
                     <button
                       onClick={() => handleEditItem(index)}
