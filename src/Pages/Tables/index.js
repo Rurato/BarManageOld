@@ -16,6 +16,14 @@ function Tables() {
     const storedStock = JSON.parse(localStorage.getItem('stock')) || [];
     setTables(storedTables);
     setStock(storedStock);
+
+    const lowStockItems = storedStock.filter((item) => item.quantity < 10);
+    if (lowStockItems.length > 0) {
+      alert(
+        `Atenção! Os seguintes itens estão com estoque muito baixo:\n` +
+        lowStockItems.map(item => `- ${item.name} (${item.quantity})`).join('\n')
+      );
+    }
   }, []);
 
   const handleTableClick = (index) => {
@@ -126,7 +134,6 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
   };
 
-  // Obter categorias únicas do estoque
   const categories = [...new Set(stock.map((item) => item.category))];
 
   return (
