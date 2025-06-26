@@ -16,14 +16,6 @@ function Tables() {
     const storedStock = JSON.parse(localStorage.getItem('stock')) || [];
     setTables(storedTables);
     setStock(storedStock);
-
-    const lowStockItems = storedStock.filter((item) => item.quantity < 10);
-    if (lowStockItems.length > 0) {
-      alert(
-        `Atenção! Os seguintes itens estão com estoque muito baixo:\n` +
-        lowStockItems.map(item => `- ${item.name} (${item.quantity})`).join('\n')
-      );
-    }
   }, []);
 
   const handleTableClick = (index) => {
@@ -77,6 +69,10 @@ function Tables() {
     setSelectedItem('');
     setSelectedQuantity('');
     setSelectedCategory('');
+
+    if (item.quantity - selectedQuantity < 10) {
+      alert(`Aviso: Estoque do item "${item.name}" muito baixo!`);
+    }
   };
 
   const handleCloseTable = () => {
@@ -136,6 +132,43 @@ function Tables() {
 
   const categories = [...new Set(stock.map((item) => item.category))];
 
+  const handleItemRemovalChange = (tableIdx, itemIdx, value) => {
+    const updatedTables = [...tables];
+    updatedTables[tableIdx].items[itemIdx].removalQuantity = parseInt(value, 10) || 0;
+    setTables(updatedTables);
+  };
+
+  const handleRemoveItemFromTable = (tableIdx, itemIdx) => {
+    const removalQty = tables[tableIdx].items[itemIdx].removalQuantity || 0;
+    const item = tables[tableIdx].items[itemIdx];
+
+    if (removalQty <= 0 || removalQty > item.quantity) {
+      alert('Quantidade inválida para remoção!');
+      return;
+    }
+
+    const updatedTables = [...tables];
+    const updatedItems = [...updatedTables[tableIdx].items];
+    if (item.quantity - removalQty <= 0) {
+      updatedItems.splice(itemIdx, 1);
+    } else {
+      updatedItems[itemIdx].quantity -= removalQty;
+    }
+
+    updatedTables[tableIdx].items = updatedItems;
+
+    const updatedStock = stock.map((s) =>
+      s.name === item.name
+        ? { ...s, quantity: s.quantity + removalQty }
+        : s
+    );
+
+    setTables(updatedTables);
+    setStock(updatedStock);
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
+    localStorage.setItem('stock', JSON.stringify(updatedStock));
+  };
+
   return (
     <div className="tables-container">
       <div className="back">
@@ -171,8 +204,24 @@ function Tables() {
               <h3>Itens na Comanda {selectedTable + 1}</h3>
               <ul>
                 {tables[selectedTable].items.map((item, idx) => (
-                  <li key={idx}>
-                    {item.name} ({item.quantity}x) - R${(item.price * item.quantity).toFixed(2)}
+                  <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span>
+                      {item.name} ({item.quantity}x) - R${(item.price * item.quantity).toFixed(2)}
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={item.quantity}
+                      placeholder="Qtd"
+                      style={{ width: '70px' }}
+                      onChange={(e) => handleItemRemovalChange(selectedTable, idx, e.target.value)}
+                    />
+                    <button
+                      className="btn"
+                      onClick={() => handleRemoveItemFromTable(selectedTable, idx)}
+                    >
+                      Remover
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -184,9 +233,7 @@ function Tables() {
               >
                 <option value="">Selecione uma Categoria</option>
                 {categories.map((category, idx) => (
-                  <option key={idx} value={category}>
-                    {category}
-                  </option>
+                  <option key={idx} value={category}>{category}</option>
                 ))}
               </select>
               {selectedCategory && (
