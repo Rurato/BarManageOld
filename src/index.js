@@ -7,6 +7,8 @@ import Dashboard from './Pages/Dashboard';
 import Stock from './Pages/Stock';
 import Tables from './Pages/Tables';
 import History from './Pages/history';
+import AddItem from './Pages/AddItem';
+import AddCategory from './Pages/AddCategory';
 import './index.css';
 
 // Criando o root com a nova API
@@ -21,6 +23,8 @@ root.render(
       <Route path="/tables" element={<Tables />} />
       <Route path="/" element={<App />} />
       <Route path="/history" element={<History />} />
+      <Route path="/AddItem" element={<AddItem />} />
+      <Route path="/AddCategory" element={<AddCategory />} />
     </Routes>
   </Router>
 );

@@ -14,7 +14,6 @@ function Stock() {
   const [searchCategory, setSearchCategory] = useState("");
   const [sorting, setSorting] = useState({ field: "", ascending: true });
   const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState("");
 
   useEffect(() => {
     const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
@@ -25,7 +24,8 @@ function Stock() {
     ];
     setCategories(uniqueCategories);
 
-    const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+    const storedCategories =
+      JSON.parse(localStorage.getItem("categories")) || [];
     if (storedCategories.length) {
       setCategories(storedCategories);
     }
@@ -34,26 +34,6 @@ function Stock() {
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
-
-  const handleAddItem = () => {
-    if (itemName && itemQuantity && itemPrice && itemCategory) {
-      const newItem = {
-        name: itemName,
-        category: itemCategory,
-        quantity: parseInt(itemQuantity, 10),
-        price: parseFloat(itemPrice),
-      };
-      const updatedStock = [...stock, newItem];
-      setStock(updatedStock);
-      localStorage.setItem("stock", JSON.stringify(updatedStock));
-      setItemName("");
-      setItemQuantity("");
-      setItemPrice("");
-      setItemCategory("");
-    } else {
-      alert("Preencha todos os campos!");
-    }
-  };
 
   const handleDeleteItem = (index) => {
     const updatedStock = stock.filter((_, idx) => idx !== index);
@@ -74,7 +54,9 @@ function Stock() {
     const updatedStock = [...stock];
     updatedStock[index] = {
       name: itemName || stock[index].name,
-      quantity: itemQuantity ? parseInt(itemQuantity, 10) : stock[index].quantity,
+      quantity: itemQuantity
+        ? parseInt(itemQuantity, 10)
+        : stock[index].quantity,
       price: itemPrice ? parseFloat(itemPrice) : stock[index].price,
       category: itemCategory || stock[index].category,
     };
@@ -103,7 +85,7 @@ function Stock() {
       Nome: item.name,
       Categoria: item.category,
       Quantidade: item.quantity,
-      Preço: item.price.toFixed(2).replace('.', ','),
+      Preço: item.price.toFixed(2).replace(".", ","),
     }));
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -128,73 +110,27 @@ function Stock() {
   return (
     <div className="stock-container">
       <div className="back">
-        <Link to="/Dashboard" className="btn">Voltar</Link>
+        <Link to="/Dashboard" className="btn">
+          Voltar
+        </Link>
       </div>
       <h2>Gerenciamento de Estoque</h2>
 
-      <button onClick={handleExportToExcel} className="btn">
-        Exportar Estoque para Excel
+      <button className="btn-link">
+        <Link to="/AddItem" className="btn">
+          Cadastrar Produto
+        </Link>
+      </button>
+      <button className="btn-link">
+        <Link to="/AddCategory" className="btn">
+        Cadastrar Categoria
+      </Link>
       </button>
 
-      <div className="add-item-container">
-        <input
-          type="text"
-          placeholder="Nome do Item"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          className="input-field"
-        />
-
-        <select
-          value={itemCategory}
-          onChange={(e) => setItemCategory(e.target.value)}
-          className="input-field"
-        >
-          <option value="">Selecione uma categoria</option>
-          {categories.map((cat, i) => (
-            <option key={i} value={cat}>{cat}</option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          placeholder="Quantidade"
-          value={itemQuantity}
-          onChange={(e) => setItemQuantity(e.target.value)}
-          className="input-field"
-        />
-        <input
-          type="number"
-          placeholder="Preço"
-          value={itemPrice}
-          onChange={(e) => setItemPrice(e.target.value)}
-          className="input-field"
-        />
-        <button onClick={handleAddItem} className="btn">
-          Adicionar Item
-        </button>
-      </div>
-
-      <div className="add-category-container">
-        <input
-          type="text"
-          placeholder="Nova categoria"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          className="input-field"
-        />
-        <button
-          onClick={() => {
-            if (newCategory && !categories.includes(newCategory)) {
-              setCategories([...categories, newCategory]);
-              setNewCategory("");
-            }
-          }}
-          className="btn"
-        >
-          Adicionar Categoria
-        </button>
-      </div>
+      
+      <button onClick={handleExportToExcel} className="btn">
+        Exportar para Excel
+      </button>
 
       <div className="search-container">
         <input
@@ -228,31 +164,85 @@ function Stock() {
             <tr key={index}>
               {editingIndex === index ? (
                 <>
-                  <td><input type="text" defaultValue={item.name} onChange={(e) => setItemName(e.target.value)} className="input-field" /></td>
                   <td>
-                    <select value={itemCategory} onChange={(e) => setItemCategory(e.target.value)} className="input-field">
+                    <input
+                      type="text"
+                      defaultValue={item.name}
+                      onChange={(e) => setItemName(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={itemCategory}
+                      onChange={(e) => setItemCategory(e.target.value)}
+                      className="input-field"
+                    >
                       <option value="">Selecione uma categoria</option>
                       {categories.map((cat, i) => (
-                        <option key={i} value={cat}>{cat}</option>
+                        <option key={i} value={cat}>
+                          {cat}
+                        </option>
                       ))}
                     </select>
                   </td>
-                  <td><input type="number" defaultValue={item.quantity} onChange={(e) => setItemQuantity(e.target.value)} className="input-field" /></td>
-                  <td><input type="number" defaultValue={item.price} onChange={(e) => setItemPrice(e.target.value)} className="input-field" /></td>
                   <td>
-                    <button onClick={() => handleSaveEdit(index)} className="btn">Salvar</button>
-                    <button onClick={() => setEditingIndex(null)} className="btn">Cancelar</button>
+                    <input
+                      type="number"
+                      defaultValue={item.quantity}
+                      onChange={(e) => setItemQuantity(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      defaultValue={item.price}
+                      onChange={(e) => setItemPrice(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleSaveEdit(index)}
+                      className="btn"
+                    >
+                      Salvar
+                    </button>
+                    <button
+                      onClick={() => setEditingIndex(null)}
+                      className="btn"
+                    >
+                      Cancelar
+                    </button>
                   </td>
                 </>
               ) : (
                 <>
                   <td>{item.name}</td>
                   <td>{item.category}</td>
-                  <td style={{ color: getQuantityColor(item.quantity), fontWeight: "bold" }}>{item.quantity}</td>
+                  <td
+                    style={{
+                      color: getQuantityColor(item.quantity),
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {item.quantity}
+                  </td>
                   <td>R${item.price.toFixed(2)}</td>
                   <td>
-                    <button onClick={() => handleEditItem(index)} className="btn">Editar</button>
-                    <button onClick={() => handleDeleteItem(index)} className="btn">Remover</button>
+                    <button
+                      onClick={() => handleEditItem(index)}
+                      className="btn"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(index)}
+                      className="btn"
+                    >
+                      Remover
+                    </button>
                   </td>
                 </>
               )}

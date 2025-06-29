@@ -63,6 +63,7 @@
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 12px;
   }
   
   .btn:hover {
