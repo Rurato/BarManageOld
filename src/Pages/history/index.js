@@ -5,44 +5,79 @@ import './styles.css';
 
 function History() {
   const [history, setHistory] = useState([]);
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [dataInicial, setDataInicial] = useState('');
+  const [dataFinal, setDataFinal] = useState('');
+
+  // Função para obter a data de hoje no formato yyyy-mm-dd
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   useEffect(() => {
     const storedHistory = JSON.parse(localStorage.getItem('history')) || [];
-    // Ordenar por timestamp (mais recente primeiro)
     const sortedHistory = storedHistory.sort((a, b) => b.timestamp - a.timestamp);
     setHistory(sortedHistory);
+
+    const hoje = getTodayDate();
+    setDataInicial(hoje);
+    setDataFinal(hoje);
   }, []);
+
+  useEffect(() => {
+    if (!dataInicial && !dataFinal) {
+      setFilteredHistory(history);
+      return;
+    }
+
+    const start = dataInicial ? new Date(dataInicial + 'T00:00:00') : null;
+    const end = dataFinal ? new Date(dataFinal + 'T23:59:59') : null;
+
+    const filtered = history.filter(entry => {
+      const ts = entry.timestamp;
+      return (!start || ts >= start.getTime()) && (!end || ts <= end.getTime());
+    });
+
+    setFilteredHistory(filtered);
+  }, [dataInicial, dataFinal, history]);
 
   const clearHistory = () => {
     if (window.confirm("Tem certeza que deseja limpar o histórico?")) {
       localStorage.removeItem('history');
       setHistory([]);
+      setFilteredHistory([]);
       alert("Histórico limpo com sucesso!");
     }
   };
 
   const exportToExcel = () => {
-    if (history.length === 0) {
-      alert("Não há histórico para exportar.");
+    if (filteredHistory.length === 0) {
+      alert("Nenhum dado filtrado para exportar.");
       return;
     }
 
-    // Transformar os dados do histórico em um array de objetos
-    const dataToExport = history.map(entry => ({
+    const dataToExport = filteredHistory.map(entry => ({
       Responsável: entry.responsible,
-      Mesa: entry.tableNumber,
+      Mesa: entry.tableNumber || '-',
       Total: entry.total.toFixed(2),
       FechadaEm: new Date(entry.timestamp).toLocaleString(),
       Itens: entry.items.map(item => `${item.name} (${item.quantity}x)`).join(', '),
     }));
 
-    // Criar uma nova planilha
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
-    const Data = new Date (Date.now());
-    // Exportar o arquivo
-    XLSX.writeFile(workbook, 'historico_'+Data.toLocaleString('pt-BR', { timezone: 'UTC' })+'.xlsx');
+
+    const agora = new Date();
+    const nomeArquivo = `historico_${agora.toLocaleDateString('pt-BR')}_${agora.toLocaleTimeString('pt-BR')}.xlsx`;
+    XLSX.writeFile(workbook, nomeArquivo);
+  };
+
+  const resetFiltrosParaHoje = () => {
+    const hoje = getTodayDate();
+    setDataInicial(hoje);
+    setDataFinal(hoje);
   };
 
   return (
@@ -50,19 +85,46 @@ function History() {
       <div className="back">
         <Link to="/Tables" className="btn">Voltar</Link>
       </div>
+
       <h2>Histórico de Comandas Fechadas</h2>
+
+      <div className="filtros-data" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        <div>
+          <label>Data Inicial:</label>
+          <input
+            type="date"
+            value={dataInicial}
+            onChange={(e) => setDataInicial(e.target.value)}
+            className="input-field"
+          />
+        </div>
+        <div>
+          <label>Data Final:</label>
+          <input
+            type="date"
+            value={dataFinal}
+            onChange={(e) => setDataFinal(e.target.value)}
+            className="input-field"
+          />
+        </div>
+        <div style={{ alignSelf: 'flex-end' }}>
+          <button onClick={resetFiltrosParaHoje} className="btn btn-clear">Limpar Filtros</button>
+        </div>
+      </div>
+
       <div className="button-container">
         <button onClick={clearHistory} className="btn btn-clear">Limpar Histórico</button>
         <button onClick={exportToExcel} className="btn btn-export">Exportar para Excel</button>
       </div>
-      {history.length === 0 ? (
-        <p>Nenhuma comanda foi fechada ainda.</p>
+
+      {filteredHistory.length === 0 ? (
+        <p>Nenhuma comanda encontrada para o período selecionado.</p>
       ) : (
         <ul>
-          {history.map((entry, index) => (
+          {filteredHistory.map((entry, index) => (
             <li key={index}>
               <h3>Responsável: {entry.responsible}</h3>
-              <p>Comanda {entry.tableNumber}</p>
+              {entry.tableNumber && <p>Comanda {entry.tableNumber}</p>}
               <ul>
                 {entry.items.map((item, idx) => (
                   <li key={idx}>
