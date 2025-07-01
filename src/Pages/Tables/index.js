@@ -20,16 +20,13 @@ function Tables() {
 
   const handleTableClick = (index) => {
     setSelectedTable(index);
-    if (tables[index]?.responsible) {
-      setResponsible('');
-    }
   };
 
   const handleAssignTable = () => {
     const updatedTables = [...tables];
     updatedTables[selectedTable] = {
-      responsible: responsible || tables[selectedTable]?.responsible,
-      items: tables[selectedTable]?.items || [],
+      responsible: responsible,
+      items: [],
     };
     setTables(updatedTables);
     localStorage.setItem('tables', JSON.stringify(updatedTables));
@@ -52,15 +49,13 @@ function Tables() {
     const updatedStock = stock.map((i) =>
       i.name === selectedItem ? { ...i, quantity: i.quantity - selectedQuantity } : i
     );
+
     const updatedTables = [...tables];
     const currentItems = updatedTables[selectedTable]?.items || [];
-    updatedTables[selectedTable] = {
-      ...updatedTables[selectedTable],
-      items: [
-        ...currentItems,
-        { name: selectedItem, quantity: selectedQuantity, price: item.price },
-      ],
-    };
+    updatedTables[selectedTable].items = [
+      ...currentItems,
+      { name: selectedItem, quantity: selectedQuantity, price: item.price },
+    ];
 
     setStock(updatedStock);
     setTables(updatedTables);
@@ -84,7 +79,6 @@ function Tables() {
     );
 
     const closedTableEntry = {
-      tableNumber: selectedTable + 1,
       responsible: table.responsible,
       items: table.items,
       total,
@@ -96,7 +90,7 @@ function Tables() {
     localStorage.setItem('history', JSON.stringify(updatedHistory));
 
     alert(
-      `Mesa ${selectedTable + 1} fechada! \nItens Consumidos:\n` +
+      `Comanda de ${table.responsible} fechada!\nItens Consumidos:\n` +
         table.items
           .map(
             (item) =>
@@ -108,7 +102,8 @@ function Tables() {
         `\nTotal: R$${total.toFixed(2)}`
     );
 
-    updatedTables[selectedTable] = null;
+    // Remover comanda após fechar
+    updatedTables.splice(selectedTable, 1);
     setTables(updatedTables);
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     setSelectedTable(null);
@@ -130,36 +125,15 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
   };
 
-  const categories = [...new Set(stock.map((item) => item.category))];
-
-  const handleItemRemovalChange = (tableIdx, itemIdx, value) => {
-    const updatedTables = [...tables];
-    updatedTables[tableIdx].items[itemIdx].removalQuantity = parseInt(value, 10) || 0;
-    setTables(updatedTables);
-  };
-
   const handleRemoveItemFromTable = (tableIdx, itemIdx) => {
-    const removalQty = tables[tableIdx].items[itemIdx].removalQuantity || 0;
     const item = tables[tableIdx].items[itemIdx];
 
-    if (removalQty <= 0 || removalQty > item.quantity) {
-      alert('Quantidade inválida para remoção!');
-      return;
-    }
-
     const updatedTables = [...tables];
-    const updatedItems = [...updatedTables[tableIdx].items];
-    if (item.quantity - removalQty <= 0) {
-      updatedItems.splice(itemIdx, 1);
-    } else {
-      updatedItems[itemIdx].quantity -= removalQty;
-    }
-
-    updatedTables[tableIdx].items = updatedItems;
+    updatedTables[tableIdx].items.splice(itemIdx, 1);
 
     const updatedStock = stock.map((s) =>
       s.name === item.name
-        ? { ...s, quantity: s.quantity + removalQty }
+        ? { ...s, quantity: s.quantity + item.quantity }
         : s
     );
 
@@ -168,6 +142,8 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     localStorage.setItem('stock', JSON.stringify(updatedStock));
   };
+
+  const categories = [...new Set(stock.map((item) => item.category))];
 
   return (
     <div className="tables-container">
@@ -183,7 +159,7 @@ function Tables() {
             className={`table-icon ${table ? 'occupied' : 'available'}`}
             onClick={() => handleTableClick(index)}
           >
-            Comanda {index + 1}: {table?.responsible && <span>{table.responsible}</span>}
+            {table ? `Comanda: ${table.responsible}` : 'Comanda'}
           </div>
         ))}
       </div>
@@ -201,26 +177,18 @@ function Tables() {
         <div className="form-container">
           {tables[selectedTable] ? (
             <>
-              <h3>Itens na Comanda {selectedTable + 1}</h3>
+              <h3>Itens da Comanda: {tables[selectedTable].responsible}</h3>
               <ul>
                 {tables[selectedTable].items.map((item, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>
                       {item.name} ({item.quantity}x) - R${(item.price * item.quantity).toFixed(2)}
                     </span>
-                    <input
-                      type="number"
-                      min="1"
-                      max={item.quantity}
-                      placeholder="Qtd"
-                      style={{ width: '70px' }}
-                      onChange={(e) => handleItemRemovalChange(selectedTable, idx, e.target.value)}
-                    />
                     <button
                       className="btn"
                       onClick={() => handleRemoveItemFromTable(selectedTable, idx)}
                     >
-                      Remover
+                      Remover Item
                     </button>
                   </li>
                 ))}
@@ -264,7 +232,7 @@ function Tables() {
             </>
           ) : (
             <>
-              <h3>Atribuir Responsável à Comanda {selectedTable + 1}</h3>
+              <h3>Atribuir Responsável à Nova Comanda</h3>
               <input
                 type="text"
                 placeholder="Nome do Responsável"
