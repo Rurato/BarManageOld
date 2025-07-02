@@ -6,7 +6,7 @@ import "./styles.css";
 function Stock() {
   const [stock, setStock] = useState([]);
   const [itemName, setItemName] = useState("");
-  const [itemQuantity, setItemQuantity] = useState("");
+
   const [itemPrice, setItemPrice] = useState("");
   const [itemCategory, setItemCategory] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
@@ -14,22 +14,30 @@ function Stock() {
   const [searchCategory, setSearchCategory] = useState("");
   const [sorting, setSorting] = useState({ field: "", ascending: true });
   const [categories, setCategories] = useState([]);
+  const [addQuantity, setAddQuantity] = useState("");
+  const [removeQuantity, setRemoveQuantity] = useState("");
 
   useEffect(() => {
-    const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
-    setStock(storedStock);
+  const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
+  
+  // Ordenar estoque por nome ascendente ao carregar
+  const sortedStock = [...storedStock].sort((a, b) => {
+    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+    if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+    return 0;
+  });
+  setStock(sortedStock);
 
-    const uniqueCategories = [
-      ...new Set(storedStock.map((item) => item.category)),
-    ];
-    setCategories(uniqueCategories);
+  const uniqueCategories = [
+    ...new Set(sortedStock.map((item) => item.category)),
+  ];
+  setCategories(uniqueCategories);
 
-    const storedCategories =
-      JSON.parse(localStorage.getItem("categories")) || [];
-    if (storedCategories.length) {
-      setCategories(storedCategories);
-    }
-  }, []);
+  const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+  if (storedCategories.length) {
+    setCategories(storedCategories);
+  }
+}, []);
 
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories));
@@ -45,28 +53,38 @@ function Stock() {
     setEditingIndex(index);
     const item = stock[index];
     setItemName(item.name);
-    setItemQuantity(item.quantity.toString());
+
     setItemPrice(item.price.toString());
     setItemCategory(item.category);
+    setAddQuantity("");
+    setRemoveQuantity("");
   };
 
   const handleSaveEdit = (index) => {
     const updatedStock = [...stock];
+    const currentQuantity = updatedStock[index].quantity;
+
+    const added = parseInt(addQuantity || "0", 10);
+    const removed = parseInt(removeQuantity || "0", 10);
+    let newQuantity = currentQuantity + added - removed;
+    if (newQuantity < 0) newQuantity = 0;
+
     updatedStock[index] = {
-      name: itemName || stock[index].name,
-      quantity: itemQuantity
-        ? parseInt(itemQuantity, 10)
-        : stock[index].quantity,
-      price: itemPrice ? parseFloat(itemPrice) : stock[index].price,
-      category: itemCategory || stock[index].category,
+      ...updatedStock[index],
+      name: itemName || updatedStock[index].name,
+      category: itemCategory || updatedStock[index].category,
+      price: itemPrice ? parseFloat(itemPrice) : updatedStock[index].price,
+      quantity: newQuantity,
     };
+
     setStock(updatedStock);
     localStorage.setItem("stock", JSON.stringify(updatedStock));
     setEditingIndex(null);
     setItemName("");
-    setItemQuantity("");
     setItemPrice("");
     setItemCategory("");
+    setAddQuantity("");
+    setRemoveQuantity("");
   };
 
   const handleSort = (field) => {
@@ -101,10 +119,9 @@ function Stock() {
       item.category.toLowerCase().includes(searchCategory.toLowerCase())
   );
 
-  const getQuantityColor = (quantity) => {
-    if (quantity > 100) return "green";
-    if (quantity >= 50) return "orange";
-    return "red";
+  const getQuantityColor = (quantity, minQuantity) => {
+    if (quantity <= minQuantity) return "red";
+    if (quantity > minQuantity) return "black";
   };
 
   return (
@@ -123,11 +140,10 @@ function Stock() {
       </button>
       <button className="btn-link">
         <Link to="/AddCategory" className="btn">
-        Cadastrar Categoria
-      </Link>
+          Cadastrar Categoria
+        </Link>
       </button>
 
-      
       <button onClick={handleExportToExcel} className="btn">
         Exportar para Excel
       </button>
@@ -155,6 +171,8 @@ function Stock() {
             <th onClick={() => handleSort("name")}>Nome</th>
             <th onClick={() => handleSort("category")}>Categoria</th>
             <th onClick={() => handleSort("quantity")}>Quantidade</th>
+            {editingIndex !== null && <th>Adicionar</th>}
+            {editingIndex !== null && <th>Remover</th>}
             <th onClick={() => handleSort("price")}>Preço</th>
             <th>Ações</th>
           </tr>
@@ -167,7 +185,7 @@ function Stock() {
                   <td>
                     <input
                       type="text"
-                      defaultValue={item.name}
+                      value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
                       className="input-field"
                     />
@@ -186,18 +204,34 @@ function Stock() {
                       ))}
                     </select>
                   </td>
+                  <td
+                    style={{
+                      color: getQuantityColor(item.quantity, item.minQuantity),
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {item.quantity}
+                  </td>
                   <td>
                     <input
                       type="number"
-                      defaultValue={item.quantity}
-                      onChange={(e) => setItemQuantity(e.target.value)}
+                      value={addQuantity}
+                      onChange={(e) => setAddQuantity(e.target.value)}
                       className="input-field"
                     />
                   </td>
                   <td>
                     <input
                       type="number"
-                      defaultValue={item.price}
+                      value={removeQuantity}
+                      onChange={(e) => setRemoveQuantity(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      value={itemPrice}
                       onChange={(e) => setItemPrice(e.target.value)}
                       className="input-field"
                     />
@@ -223,12 +257,13 @@ function Stock() {
                   <td>{item.category}</td>
                   <td
                     style={{
-                      color: getQuantityColor(item.quantity),
-                      fontWeight: "bold",
+                      color: getQuantityColor(item.quantity, item.minQuantity),
                     }}
                   >
                     {item.quantity}
                   </td>
+                  {editingIndex !== null && <td></td>}
+                  {editingIndex !== null && <td></td>}
                   <td>R${item.price.toFixed(2)}</td>
                   <td>
                     <button

@@ -43,6 +43,9 @@ function Tables() {
     const item = stock.find((i) => i.name === selectedItem);
     if (!item || item.quantity < selectedQuantity) {
       alert('Quantidade insuficiente no estoque!');
+      setSelectedItem('');
+      setSelectedQuantity('');
+      setSelectedCategory('');
       return;
     }
 
@@ -115,15 +118,13 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
   };
 
-  const handleRemoveTable = (index) => {
-    if (tables[index]) {
-      alert('A comanda precisa estar vazia para ser removida!');
-      return;
-    }
-    const updatedTables = tables.filter((_, idx) => idx !== index);
-    setTables(updatedTables);
-    localStorage.setItem('tables', JSON.stringify(updatedTables));
-  };
+  const handleRemoveOpenTable = () => {
+  const updatedTables = [...tables];
+  updatedTables.splice(selectedTable, 1); // remove a comanda aberta selecionada
+  setTables(updatedTables);
+  localStorage.setItem('tables', JSON.stringify(updatedTables));
+  setSelectedTable(null);
+};
 
   const handleRemoveItemFromTable = (tableIdx, itemIdx) => {
     const item = tables[tableIdx].items[itemIdx];
@@ -164,14 +165,7 @@ function Tables() {
         ))}
       </div>
       <button onClick={handleAddTable} className="btn">Adicionar Comanda</button>
-      {tables.length > 0 && (
-        <button
-          onClick={() => handleRemoveTable(tables.length - 1)}
-          className="btn"
-        >
-          Remover Última Comanda
-        </button>
-      )}
+      
 
       {selectedTable !== null && (
         <div className="form-container">
@@ -241,7 +235,9 @@ function Tables() {
                 className="input-field-tables"
               />
               <button onClick={handleAssignTable} className="btn">Atribuir</button>
+              <button onClick={handleRemoveOpenTable} className="btn">Remover Comanda</button>
             </>
+            
           )}
           <button onClick={() => setSelectedTable(null)} className="btn">Cancelar</button>
         </div>

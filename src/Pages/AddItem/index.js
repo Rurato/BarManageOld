@@ -8,6 +8,7 @@ function AddItem() {
   const [itemPrice, setItemPrice] = useState("");
   const [itemCategory, setItemCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [itemMinQuantity, setItemMinQuantity] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,21 +17,39 @@ function AddItem() {
   }, []);
 
   const handleAddItem = () => {
-    if (itemName && itemQuantity && itemPrice && itemCategory) {
-      const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
-      const newItem = {
-        name: itemName,
-        category: itemCategory,
-        quantity: parseInt(itemQuantity, 10),
-        price: parseFloat(itemPrice),
-      };
-      const updatedStock = [...storedStock, newItem];
-      localStorage.setItem("stock", JSON.stringify(updatedStock));
-      navigate("/Stock");
-    } else {
-      alert("Preencha todos os campos!");
+  if (itemName && itemQuantity && itemPrice && itemCategory) {
+    const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
+
+    //  Verificar duplicidade antes de adicionar
+    const itemExists = storedStock.some(
+      (item) =>
+        item.name.toLowerCase() === itemName.toLowerCase()
+    );
+    if (itemExists) {
+      alert("Este item já existe no estoque!");
+      setItemName("");
+      setItemQuantity("");
+      setItemPrice("");
+      setItemCategory("");
+      setItemMinQuantity("");
+      return;
     }
-  };
+
+    const newItem = {
+      name: itemName,
+      category: itemCategory,
+      quantity: parseInt(itemQuantity, 10),
+      price: parseFloat(itemPrice),
+      minQuantity: parseInt(itemMinQuantity, 10),
+    };
+    const updatedStock = [...storedStock, newItem];
+    localStorage.setItem("stock", JSON.stringify(updatedStock));
+    navigate("/Stock");
+  } else {
+    alert("Preencha todos os campos!");
+  }
+};
+
 
   return (
     <div className="stock-container">
@@ -44,6 +63,7 @@ function AddItem() {
         ))}
       </select>
       <input type="number" placeholder="Quantidade" value={itemQuantity} onChange={(e) => setItemQuantity(e.target.value)} className="input-field" />
+      <input type="number" placeholder="Quantidade Minima" value={itemMinQuantity} onChange={(e) => setItemMinQuantity(e.target.value)} className="input-field" />
       <input type="number" placeholder="Preço" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} className="input-field" />
       <button onClick={handleAddItem} className="btn">Salvar Item</button>
     </div>
