@@ -82,9 +82,11 @@ function AddCategory() {
 
   return (
     <div className="stock-container">
-      <Link to="/Stock" className="btn">
-        Voltar
-      </Link>
+      <div className="btn-back">
+        <Link to="/Stock" className="btn">
+          Voltar
+        </Link>
+      </div>
       <h2>Gerenciamento de Categorias</h2>
 
       <div className="add-category-container">
