@@ -70,4 +70,9 @@
     background-color: #0056b3;
   }
   
-  
+  @media screen and (max-width: 460px) {
+    .tables-grid {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    
+  }
