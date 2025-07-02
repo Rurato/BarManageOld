@@ -160,12 +160,13 @@ function Tables() {
             className={`table-icon ${table ? 'occupied' : 'available'}`}
             onClick={() => handleTableClick(index)}
           >
-            {table ? `Comanda: ${table.responsible}` : 'Comanda'}
+            {table ? `${table.responsible}` : 'Disponível'}
           </div>
         ))}
       </div>
-      <button onClick={handleAddTable} className="btn">Adicionar Comanda</button>
-      
+      <div className="add-table">
+      <button onClick={handleAddTable} className="btn ">Adicionar Comanda</button>
+      </div>
 
       {selectedTable !== null && (
         <div className="form-container">
@@ -187,7 +188,7 @@ function Tables() {
                   </li>
                 ))}
               </ul>
-              <h3>Adicionar Item à Comanda</h3>
+              <h3>Adicionar Item</h3>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -221,12 +222,13 @@ function Tables() {
                 onChange={(e) => setSelectedQuantity(Number(e.target.value))}
                 className="input-field-tables"
               />
-              <button onClick={handleAddItemToTable} className="btn">Adicionar Item</button>
-              <button onClick={handleCloseTable} className="btn">Fechar Comanda</button>
+              <button onClick={handleAddItemToTable} className="btn">Adicionar</button>
+              <button onClick={handleCloseTable} className="btn close-command">Finalizar Comanda</button>
+              <button onClick={handleRemoveOpenTable} className="btn">Remover</button>
             </>
           ) : (
             <>
-              <h3>Atribuir Responsável à Nova Comanda</h3>
+              <h3>Comanda Disponível</h3>
               <input
                 type="text"
                 placeholder="Nome do Responsável"
@@ -235,7 +237,7 @@ function Tables() {
                 className="input-field-tables"
               />
               <button onClick={handleAssignTable} className="btn">Atribuir</button>
-              <button onClick={handleRemoveOpenTable} className="btn">Remover Comanda</button>
+              <button onClick={handleRemoveOpenTable} className="btn">Remover</button>
             </>
             
           )}

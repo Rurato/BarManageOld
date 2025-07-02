@@ -1,78 +1,93 @@
 .tables-container {
-    padding: 20px;
-  }
-  
-  .table {
-    margin: 20px 0;
-  }
-  
-  .input-field {
-    margin: 10px 0;
-    padding: 10px;
-  }
-  .back{
-    text-align: left;
-    padding: 0;
-  }
-  .tables-container {
-    padding: 20px;
-  }
-  
+  padding: 20px;
+}
+
+.table {
+  margin: 20px 0;
+}
+
+.input-field {
+  margin: 10px 0;
+  padding: 10px;
+}
+.back {
+  text-align: left;
+  padding: 0;
+}
+.tables-container {
+  padding: 20px;
+}
+
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.table-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  height: 100px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
+.table-icon.available {
+  background-color: #4caf50;
+}
+
+.table-icon.occupied {
+  background-color: #f44336;
+}
+
+.form-container {
+  margin-top: 20px;
+}
+
+.input-field-tables {
+  width: 200px;
+  margin: 10px 0;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.btn {
+  margin: 5px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+.close-command {
+  background-color: #f44336;
+}
+@media screen and (max-width: 460px) {
   .tables-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(1, 1fr);
   }
-  
-  .table-icon {
+  .add-table {
+    display: flex;
+    justify-content: center;
+  }
+  .form-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px;
-    height: 100px;
-    cursor: pointer;
-    font-weight: bold;
-    color: white;
-    font-size: 18px;
-    padding-left: 10px;
-  }
-  
-  .table-icon.available {
-    background-color: #4caf50;
-  }
-  
-  .table-icon.occupied {
-    background-color: #f44336;
-  }
-  
-  .form-container {
-    margin-top: 20px;
-  }
-  
-  .input-field-tables {
-    width: 200px;
-    margin: 10px 0;
-    padding: 10px;
-    margin-right: 10px;
-  }
-  
-  .btn {
-    margin: 5px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 12px;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  @media screen and (max-width: 460px) {
-    .tables-grid {
-      grid-template-columns: repeat(1, 1fr);
+    flex-direction: column;
+    > h3 {
+      text-align: center;
+      width: min-content;
     }
-    
   }
+}
