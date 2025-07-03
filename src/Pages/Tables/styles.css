@@ -16,6 +16,10 @@
 }
 .tables-container {
   padding: 20px;
+  >hr{
+    border: 1px solid #ccc;
+    width: 80%;
+  }
 }
 
 .tables-grid {
@@ -45,13 +49,20 @@
   background-color: #f44336;
 }
 
-
+.form-container{
+  >hr{
+    border: 1px solid #ccc;
+    width: 80%;
+  }
+}
 
 .input-field-tables {
   width: 200px;
   margin: 10px 0;
   padding: 10px;
   margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 .btn {

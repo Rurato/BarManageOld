@@ -121,12 +121,15 @@ function Tables() {
   };
 
   const handleRemoveOpenTable = () => {
+  const confirmDelete = window.confirm("Tem certeza que deseja remover esta comanda aberta? Esta ação não pode ser desfeita.");
+  if (confirmDelete) {
     const updatedTables = [...tables];
     updatedTables.splice(selectedTable, 1); // remove a comanda aberta selecionada
     setTables(updatedTables);
     localStorage.setItem("tables", JSON.stringify(updatedTables));
     setSelectedTable(null);
-  };
+  }
+};
 
   const handleRemoveItemFromTable = (tableIdx, itemIdx) => {
     const item = tables[tableIdx].items[itemIdx];
@@ -204,6 +207,7 @@ function Tables() {
                   </li>
                 ))}
               </ul>
+              <hr />
               <h3>Adicionar Item</h3>
               <select
                 value={selectedCategory}

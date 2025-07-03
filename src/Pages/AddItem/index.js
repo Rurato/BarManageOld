@@ -58,49 +58,57 @@ function AddItem() {
         </Link>
       </div>
       <h2>Adicionar Item</h2>
-      <input
-        type="text"
-        placeholder="Nome do Item"
-        value={itemName}
-        onChange={(e) => setItemName(e.target.value)}
-        className="input-field"
-      />
-      <select
-        value={itemCategory}
-        onChange={(e) => setItemCategory(e.target.value)}
-        className="input-field"
-      >
-        <option value="">Selecione uma categoria</option>
-        {categories.map((cat, i) => (
-          <option key={i} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
-      <input
-        type="number"
-        placeholder="Quantidade"
-        value={itemQuantity}
-        onChange={(e) => setItemQuantity(e.target.value)}
-        className="input-field"
-      />
-      <input
-        type="number"
-        placeholder="Quantidade Minima"
-        value={itemMinQuantity}
-        onChange={(e) => setItemMinQuantity(e.target.value)}
-        className="input-field"
-      />
-      <input
-        type="number"
-        placeholder="Preço"
-        value={itemPrice}
-        onChange={(e) => setItemPrice(e.target.value)}
-        className="input-field"
-      />
-      <button onClick={handleAddItem} className="btn">
-        Salvar Item
-      </button>
+      <hr />
+      <div className="stock-form">
+        <label>Produto:</label>
+        <input
+          type="text"
+          placeholder="Nome do Item"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+          className="input-field"
+        />
+        <label>Categoria:</label>
+        <select
+          value={itemCategory}
+          onChange={(e) => setItemCategory(e.target.value)}
+          className="input-field"
+        >
+          <option value="">Selecione uma categoria</option>
+          {categories.map((cat, i) => (
+            <option key={i} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        <label>Quantidade:</label>
+        <input
+          type="number"
+          placeholder="Quantidade"
+          value={itemQuantity}
+          onChange={(e) => setItemQuantity(e.target.value)}
+          className="input-field"
+        />
+        <label>Quantidade Minima:</label>
+        <input
+          type="number"
+          placeholder="Quantidade Minima"
+          value={itemMinQuantity}
+          onChange={(e) => setItemMinQuantity(e.target.value)}
+          className="input-field"
+        />
+        <label>Preço:</label> 
+        <input
+          type="number"
+          placeholder="Preço"
+          value={itemPrice}
+          onChange={(e) => setItemPrice(e.target.value)}
+          className="input-field"
+        />
+        <button onClick={handleAddItem} className="btn">
+          Salvar Item
+        </button>
+      </div>
     </div>
   );
 }

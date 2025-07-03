@@ -1,6 +1,10 @@
 .edit-item-container{
+    
     >h2{
         text-align: center;
+    }
+    >hr{
+        width: 80%;
     }
 }
 
@@ -8,5 +12,12 @@
     display:flex;
     flex-direction: column;
     align-items: center;
-    
+    gap: 15px;
+    margin-top: 25px;
+    >label{
+        margin: -20px;
+    }
+    >input, select{
+        border-radius: 8px;
+    }
 }

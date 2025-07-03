@@ -3,3 +3,26 @@
     padding: 0;
     text-decoration: none;
 }
+
+.stock-container{
+    
+    >h2{
+        text-align: center;
+    }
+    >hr{
+        width: 80%;
+    }
+}
+.stock-form{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+    >label{
+        margin: -20px;
+    }
+    >input, select{
+        border-radius: 8px;
+    }
+}

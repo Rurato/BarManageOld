@@ -21,6 +21,7 @@
   margin: 10px 0;
   padding: 10px;
   border: 1px solid #ccc;
+  border-radius: 8px;
 }
 .back {
   text-align: left;
