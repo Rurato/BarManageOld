@@ -9,6 +9,7 @@ import Tables from './Pages/Tables';
 import History from './Pages/history';
 import AddItem from './Pages/AddItem';
 import AddCategory from './Pages/AddCategory';
+import EditItem from './Pages/EditItem';
 import './index.css';
 
 // Criando o root com a nova API
@@ -25,6 +26,7 @@ root.render(
       <Route path="/history" element={<History />} />
       <Route path="/AddItem" element={<AddItem />} />
       <Route path="/AddCategory" element={<AddCategory />} />
+      <Route path="/EditItem/:index" element={<EditItem />} />
     </Routes>
   </Router>
 );

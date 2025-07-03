@@ -1,0 +1,12 @@
+.edit-item-container{
+    >h2{
+        text-align: center;
+    }
+}
+
+.edit-item-form{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    
+}

@@ -18,26 +18,27 @@ function Stock() {
   const [removeQuantity, setRemoveQuantity] = useState("");
 
   useEffect(() => {
-  const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
-  
-  // Ordenar estoque por nome ascendente ao carregar
-  const sortedStock = [...storedStock].sort((a, b) => {
-    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-    if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-    return 0;
-  });
-  setStock(sortedStock);
+    const storedStock = JSON.parse(localStorage.getItem("stock")) || [];
 
-  const uniqueCategories = [
-    ...new Set(sortedStock.map((item) => item.category)),
-  ];
-  setCategories(uniqueCategories);
+    // Ordenar estoque por nome ascendente ao carregar
+    const sortedStock = [...storedStock].sort((a, b) => {
+      if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+      if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+      return 0;
+    });
+    setStock(sortedStock);
 
-  const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
-  if (storedCategories.length) {
-    setCategories(storedCategories);
-  }
-}, []);
+    const uniqueCategories = [
+      ...new Set(sortedStock.map((item) => item.category)),
+    ];
+    setCategories(uniqueCategories);
+
+    const storedCategories =
+      JSON.parse(localStorage.getItem("categories")) || [];
+    if (storedCategories.length) {
+      setCategories(storedCategories);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories));
@@ -266,11 +267,10 @@ function Stock() {
                   {editingIndex !== null && <td></td>}
                   <td>R${item.price.toFixed(2)}</td>
                   <td>
-                    <button
-                      onClick={() => handleEditItem(index)}
-                      className="btn"
-                    >
-                      Editar
+                    <button className="btn-link">
+                      <Link to={`/EditItem/${index}`} className="btn">
+                        Editar
+                      </Link>
                     </button>
                     <button
                       onClick={() => handleDeleteItem(index)}
